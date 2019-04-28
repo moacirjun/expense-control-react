@@ -6,9 +6,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap';
 import Root from './containers/Root';
 import {BrowserRouter} from 'react-router-dom';
-import configureStore from './store'
 
-const store = configureStore()
+import store from './store'
 
 ReactDOM.render(
     <BrowserRouter>

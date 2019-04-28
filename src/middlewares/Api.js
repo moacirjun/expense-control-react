@@ -1,22 +1,43 @@
 export const CALL_API = 'CALL_API';
 
-const API_ROOT = 'https://expenses-control-node.herokuapp.com/'
+const API_ROOT = 'https://cors-anywhere.herokuapp.com/https://expenses-control-node.herokuapp.com/'
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = async (endpoint) => {
-  const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint
+const callApi = async (endpoint, isPost = false, body = {}) => {
+  const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint;
 
-  return fetch(endpoint)
+  let init  = {method: 'GET'};
+
+  if (isPost) {
+      init = {
+          method: 'POST',
+          body: convertObjectToFormData(body)
+      }
+  }
+
+  return fetch(fullUrl, init)
     .then(response =>
       response.json().then(json => {
         if (!response.ok) {
-          return Promise.reject(json)
+            console.log(json);
+            return Promise.reject(json)
         }
 
+        console.log(json);
         return json;
       })
     )
+}
+
+const convertObjectToFormData = (object) => {
+    let formData = new FormData();
+
+    for (var key in object) {
+        formData.append(key, object[key]);
+    }
+
+    return formData;
 }
 
 // A Redux middleware that interprets actions with CALL_API info specified.
@@ -28,7 +49,7 @@ export default store => next => action => {
         return next(action);
     }
 
-    const { endpoint, types } = callAPI;
+    const { endpoint, isPost = false, body = {}, types } = callAPI;
 
     if (typeof endpoint !== 'string') {
         throw new Error('Specify a string endpoint URL.');
@@ -46,7 +67,7 @@ export default store => next => action => {
 
     next({ type: requestType });
 
-    return callApi(endpoint)
+    return callApi(endpoint, isPost, body)
         .then(
             response => next({
                 response,

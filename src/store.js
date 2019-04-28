@@ -1,12 +1,11 @@
-import { createStore, applyMiddleware } from 'redux'
+import reactotron from './config/reactotron';
+import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import api from './middlewares/Api'
 import rootReducer from './reducers/index'
 
-const configureStore = preloadedState => createStore(
-  rootReducer,
-  preloadedState,
-  applyMiddleware(thunk, api)
-)
 
-export default configureStore
+export default createStore(
+  rootReducer,
+  compose(applyMiddleware(thunk, api), reactotron.createEnhancer())
+);
