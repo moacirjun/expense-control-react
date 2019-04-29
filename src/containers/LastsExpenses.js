@@ -1,28 +1,51 @@
 import React, { Component } from 'react';
-import ExpenseList from '../components/expenses-list/ExpensesList2';
-import { loadExpenses } from '../actions/ExpensesActions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import propTypes from 'prop-types';
+import { expensesType } from '../types/index';
+import ExpenseList from '../components/expenses-list/ExpensesList';
+import { fetchExpenses } from '../actions/ExpensesActions';
 
 class LastExpenses extends Component {
+  constructor(props) {
+    super(props);
+
+    const { expenses } = this.props;
+    this.expenses = expenses;
+  }
 
   componentDidMount() {
-    this.props.loadExpenses()
+    const { loadExpensesProp } = this.props;
+    loadExpensesProp();
   }
 
   render() {
+    const { expenses } = this.props;
+
     return (
-        <ExpenseList  expenses={this.props.expenses.items}></ExpenseList>
+      <ExpenseList expenses={expenses.items} />
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    expenses: state.expenses
-  }
-}
+LastExpenses.propTypes = {
+  loadExpensesProp: propTypes.func.isRequired,
+  expenses: propTypes.shape({
+    items: expensesType,
+    isFetching: propTypes.bool,
+  }),
+};
 
-export default withRouter(connect(mapStateToProps, {
-  loadExpenses,
-})(LastExpenses))
+LastExpenses.defaultProps = {
+  expenses: [],
+};
+
+const mapStateToProps = state => ({
+  expenses: state.expenses,
+});
+
+const mapDispatchToProps = dispatch => ({
+  loadExpensesProp: () => dispatch(fetchExpenses()),
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LastExpenses));
