@@ -5,6 +5,7 @@ import propTypes from 'prop-types';
 import { expensesType } from '../types/index';
 import ExpenseList from '../components/expenses-list/ExpensesList';
 import { fetchExpenses } from '../actions/ExpensesActions';
+import { requestExpenses } from '../store/actions/expenses';
 
 class LastExpenses extends Component {
   constructor(props) {
@@ -45,7 +46,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  loadExpensesProp: () => dispatch(fetchExpenses()),
+  loadExpensesProp: () => dispatch(requestExpenses()),
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LastExpenses));
