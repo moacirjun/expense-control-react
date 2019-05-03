@@ -19,14 +19,14 @@ export const fetchExpenses = () => ({
 });
 
 // fetch Expenses unless it is cached
-export const loadExpenses = () => (dispath, getState) => {
+export const loadExpenses = () => (dispatch, getState) => {
   const { expenses } = getState();
 
   if (expenses.items.length) {
     return null;
   }
 
-  return dispath(fetchExpenses());
+  return dispatch(fetchExpenses());
 };
 
 export const postExpense = body => ({
